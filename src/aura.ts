@@ -64,7 +64,7 @@ export function calculateAuraGrid(
 export function strongestAura(values: number[]): { type: AuraType; value: number } {
   let index = 0
   for (let candidate = 1; candidate < values.length; candidate += 1) {
-    if (Math.abs(values[candidate]) > Math.abs(values[index])) index = candidate
+    if (values[candidate] > values[index]) index = candidate
   }
   return { type: AURA_TYPES[index], value: values[index] }
 }

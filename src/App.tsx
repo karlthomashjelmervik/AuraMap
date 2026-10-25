@@ -87,6 +87,11 @@ export default function App() {
     setStatus('Location updated')
   }
 
+  function updateLocation(id: string, changes: Partial<Location>) {
+    setLocations((current) => current.map((location) => location.id === id ? { ...location, ...changes } : location))
+    if (selectedId === id) setDraft((current) => ({ ...current, ...changes }))
+  }
+
   function deleteSelected() {
     if (!selectedId) return
     setLocations((current) => current.filter((location) => location.id !== selectedId))
@@ -297,7 +302,7 @@ export default function App() {
               <div className="popup-title"><span className="popup-crosshair"><LocateFixed size={14} /></span><span>FIELD READOUT<small>Point analysis</small></span></div>
               <div className="popup-position"><span>X <b>{(popup.x * settings.metersPerPixel).toFixed(1)} m</b></span><span>Y <b>{(popup.y * settings.metersPerPixel).toFixed(1)} m</b></span></div>
               <div className="popup-values">{AURA_TYPES.map((type, index) => <div key={type}><span><i style={{ backgroundColor: DOMAIN_COLORS[type] }} />{type}</span><b className={popup.values[index] < 0 ? 'negative' : ''}>{popup.values[index].toFixed(2)}</b></div>)}</div>
-              <div className="dominant-readout"><span>Dominant aura</span><b><i style={{ backgroundColor: DOMAIN_COLORS[dominant.type] }} />{dominant.type}</b><strong>{Math.abs(dominant.value).toFixed(2)}</strong></div>
+              <div className="dominant-readout"><span>Dominant aura</span><b><i style={{ backgroundColor: DOMAIN_COLORS[dominant.type] }} />{dominant.type}</b><strong>{dominant.value.toFixed(2)}</strong></div>
             </div>}
             <div className="map-scale"><span /><b>{Math.round(200 / settings.metersPerPixel)} m</b></div>
             <div className="coordinate-readout">CRS <b>LOCAL GRID</b><span /> {Math.round(mapWidth * settings.metersPerPixel)} m × {Math.round(mapHeight * settings.metersPerPixel)} m</div>
@@ -308,7 +313,11 @@ export default function App() {
             <div className="table-heading"><div><span className="eyebrow">DATA LAYER</span><h2>Locations <span>{locations.length}</span></h2></div><div className="table-tools"><span className="table-note">{selectedLocation ? `Selected · ${selectedLocation.name}` : 'Select a row to edit'}</span><button className="icon-button small" title="Export location data as JSON" aria-label="Export location data as JSON" onClick={saveProject}><Download size={15} /></button></div></div>
             <div className="table-scroll"><table><thead><tr><th>NAME</th><th>DOMAIN</th><th>STRENGTH</th><th>X (M)</th><th>Y (M)</th></tr></thead><tbody>
               {filteredLocations.map((location) => <tr key={location.id} className={selectedId === location.id ? 'row-selected' : ''} onClick={() => selectLocation(location)}>
-                <td><span className="table-name"><i style={{ backgroundColor: DOMAIN_COLORS[location.domain] }} />{location.name || 'Unnamed location'}</span></td><td><span className="domain-cell"><i style={{ backgroundColor: DOMAIN_COLORS[location.domain] }} />{location.domain}</span></td><td>{location.strength.toFixed(1)}</td><td>{(location.x * settings.metersPerPixel).toFixed(1)}</td><td>{(location.y * settings.metersPerPixel).toFixed(1)}</td>
+                <td><span className="table-name"><i style={{ backgroundColor: DOMAIN_COLORS[location.domain] }} /><input className="table-input table-name-input" aria-label={`Name of ${location.name || 'location'}`} value={location.name} onChange={(event) => updateLocation(location.id, { name: event.target.value })} /></span></td>
+                <td><span className="domain-cell"><i style={{ backgroundColor: DOMAIN_COLORS[location.domain] }} /><select className="table-input table-domain-input" aria-label={`Domain of ${location.name || 'location'}`} value={location.domain} onChange={(event) => updateLocation(location.id, { domain: event.target.value as Domain })}>{DOMAINS.map((domain) => <option key={domain} value={domain}>{domain}</option>)}</select></span></td>
+                <td><input className="table-input table-number-input" aria-label={`Strength of ${location.name || 'location'}`} type="number" min="0" step="0.5" value={location.strength} onChange={(event) => updateLocation(location.id, { strength: Math.max(0, Number(event.target.value) || 0) })} /></td>
+                <td><input className="table-input table-number-input" aria-label={`X coordinate of ${location.name || 'location'} in meters`} type="number" step="0.1" value={(location.x * settings.metersPerPixel).toFixed(1)} onChange={(event) => updateLocation(location.id, { x: (Number(event.target.value) || 0) / settings.metersPerPixel })} /></td>
+                <td><input className="table-input table-number-input" aria-label={`Y coordinate of ${location.name || 'location'} in meters`} type="number" step="0.1" value={(location.y * settings.metersPerPixel).toFixed(1)} onChange={(event) => updateLocation(location.id, { y: (Number(event.target.value) || 0) / settings.metersPerPixel })} /></td>
               </tr>)}
               {filteredLocations.length === 0 && <tr><td colSpan={5} className="table-empty">No locations to display</td></tr>}
             </tbody></table></div>

@@ -153,6 +153,12 @@ tbody tr:hover { background: #f8faf8; }
 tbody tr.row-selected { background: #f0f6f1; }
 .table-name, .domain-cell { display: flex; align-items: center; gap: 7px; color: #40534a; font: 500 10px 'DM Sans', sans-serif; }
 .table-name i, .domain-cell i { width: 7px; height: 7px; border-radius: 50%; }
+.table-input { min-width: 0; height: 25px; padding: 0 5px; border: 1px solid transparent; border-radius: 3px; outline: 0; background: transparent; color: #40534a; font: 10px 'DM Sans', sans-serif; }
+.table-input:hover { border-color: #e2e8e4; background: #fffefa; }
+.table-input:focus { border-color: #89a896; background: #fffefa; box-shadow: 0 0 0 2px rgba(79, 137, 108, 0.1); }
+.table-name-input, .table-domain-input { width: 100%; flex: 1; }
+.table-domain-input { cursor: pointer; }
+.table-number-input { width: 100%; font-family: var(--mono); }
 .table-empty { height: 50px; color: #95a19a; text-align: center; font: 10px 'DM Sans', sans-serif; }
 .visualization-bar { min-height: 66px; display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-top: 1px solid #e2e8e4; background: #fffefa; }
 .visualization-title { min-width: 132px; display: flex; align-items: center; gap: 7px; color: #527466; font: 500 9px var(--mono); white-space: nowrap; }
